@@ -1,5 +1,14 @@
-body {
-	background-color: red;
-	color: #fff;
+.parent {
+	display: flex;
+	height:300px;
+	justify-content: center;
+	align-items:center;
+	background-color: blue;
 }
 
+.child {
+	width: 100px ;
+	height: 100px;
+	
+	background-color: cyan;
+}

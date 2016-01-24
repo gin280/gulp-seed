@@ -25,6 +25,8 @@ var connect = require('gulp-connect');
 var inject = require('gulp-inject');
 var babel = require("gulp-babel");
 var react = require('gulp-react');
+var browserify = require('browserify');
+var source = require('vinyl-source-stream');
 //var bowerFiles = require('main-bower-files');
 
 //postcss
@@ -125,20 +127,26 @@ gulp.task('minify-html', function() {
 
 
 //es6编译
-// gulp.task("coffee", function () {
-//   return gulp.src("app/src/*.js")
-//     .pipe(babel())
-//     .pipe(sourcemaps.write('./maps'))
-//     .pipe(gulp.dest('./app/js')).pipe(livereload());
-// });
+gulp.task("jsx", function () {
+  return browserify("app/src/test.js")
+    .transform("babelify")
+    .bundle()
+    .pipe(source('test.js'))
+    // .pipe(babel({
+    //   presets: ['es2015'],
+    //   plugins: ['transform-runtime']
+    // }))
+    // .pipe(sourcemaps.write('./maps'))
+    .pipe(gulp.dest('./app/js')).pipe(livereload());
+});
 
 //jsx
 
-gulp.task('jsx',function() {
-  gulp.src("app/src/*.jsx")
-  .pipe(react())
-  .pipe(gulp.dest('./app/js')).pipe(livereload());
-});
+// gulp.task('jsx',function() {
+//   gulp.src("app/src/*.jsx")
+//   .pipe(react())
+//   .pipe(gulp.dest('./app/js')).pipe(livereload());
+// });
 
 //js验证压缩
 // gulp.task('scripts', function() {
@@ -185,7 +193,7 @@ gulp.task('watch', function() {
 	// Watch .scss files
 	gulp.watch('app/postcss/**/*.css', ['postcss']);
 	// Watch .js files
-	gulp.watch('app/src/**/*.jsx', ['jsx']);
+	gulp.watch('app/src/**/*.js', ['jsx']);
 	// Watch image files
 	gulp.watch('app/img/**/*', ['images']);
 // Watch html files
@@ -201,7 +209,7 @@ gulp.task('connect', function() {
   });
 });
 gulp.task('html', function () {
-  gulp.src(['./app/*.html','./app/postcss/*.scss','./app/src/*.jsx'])
+  gulp.src(['./app/*.html','./app/postcss/*.scss','./app/src/*.js'])
    .pipe(livereload());
 });
 
