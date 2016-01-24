@@ -1,14 +1,19 @@
 {
-  "name": "zxy",
+  "name": "gulpSeed",
   "version": "1.0.0",
-  "description": "nothing",
+  "description": "gulp-seed",
   "main": "gulpfile.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gin280/gulp-seed.git"
+  },
   "author": "gq",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
+    "bower": "^1.7.2",
     "gulp": "~3.9.0",
     "postcss": "^5.0.0"
   },
@@ -19,6 +24,7 @@
     "babel-preset-react": "^6.3.13",
     "babelify": "^7.2.0",
     "bower": "^1.4.1",
+    "browser-sync": "^2.11.1",
     "browserify": "^13.0.0",
     "css-mqpacker": "^4.0.0",
     "cssnano": "^3.4.0",
@@ -64,7 +70,6 @@
     "postcss-pseudoelements": "^3.0.0",
     "postcss-size": "^1.0.0",
     "postcss-triangle": "^1.0.1",
-    "postcss-verthorz": "^0.6.2",
     "postcss-vmin": "^2.0.0",
     "postcss-will-change": "^1.0.0",
     "precss": "^1.4.0",

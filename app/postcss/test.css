@@ -1,14 +1,7 @@
-.parent {
-	display: flex;
-	height:300px;
-	justify-content: center;
-	align-items:center;
-	background-color: blue;
-}
-
-.child {
-	width: 100px ;
-	height: 100px;
-	
-	background-color: cyan;
+body {
+	background-color: pink;
+	color: blue;
+	font-weight: 700;
+	font-size: 4em;
+	text-align: center;
 }

@@ -1,36 +1,29 @@
 //引入插件
 var gulp = require('gulp');
-
+// import gulp from 'gulp';
 
 var minifyHTML = require('gulp-minify-html');
-var	compass = require('gulp-for-compass');
-//var	autoprefixer = require('gulp-autoprefixer');
 var	minifycss = require('gulp-minify-css');
 var	jshint = require('gulp-jshint');
 var	uglify = require('gulp-uglify');
 var imagemin = require('gulp-imagemin');
-var	rename = require('gulp-rename');
 var	concat = require('gulp-concat');
 var	notify = require('gulp-notify');
 var	cache = require('gulp-cache');
+var connect = require('gulp-connect');
 var	livereload = require('gulp-livereload');
-var	del = require('del');
-var coffee = require('gulp-coffee');
 var sourcemaps = require('gulp-sourcemaps');
-// var gutil = require('gulp-util');
+del = require('del');
 var server = require('gulp-server-livereload');
 var serve = require('gulp-serve');
 var pngquant = require('imagemin-pngquant');
-var connect = require('gulp-connect');
-var inject = require('gulp-inject');
 var babel = require("gulp-babel");
 var react = require('gulp-react');
 var browserify = require('browserify');
 var source = require('vinyl-source-stream');
-//var bowerFiles = require('main-bower-files');
+var browserSync = require('browser-sync');
 
 //postcss
-
 var postcss = require('gulp-postcss');
 var autoprefixer = require('autoprefixer');
 var cssnext = require('cssnext');
@@ -55,62 +48,45 @@ var center = require('postcss-center');
 var clearfix = require('postcss-clearfix');
 var position = require('postcss-position');
 var size = require('postcss-size');
-var verthorz = require('postcss-verthorz');
+// var verthorz = require('postcss-verthorz');
 var colorShort = require('postcss-color-short');
 
-
-//sass编译
-// gulp.task( 'compass', function(){
-//     gulp.src('app/sass/*.scss')
-//         .pipe(compass({
-//             sassDir: 'app/sass',
-//             cssDir: 'app/css',
-//             force: true
-//         })).pipe(livereload());
-   
-// });
 
 //postcss编译
 gulp.task('postcss', function () {
   var processors = [
-      will_change,
-      autoprefixer,
-      cssnext,
-      precss,
-      bem,
-      color_rgba_fallback,
-      opacity,
-      pseudoelements,
-      vmin,
-      pixrem,
-      atImport,
+        cssnano,
+        will_change,
+        autoprefixer({browsers:'safari >= 9, ie >= 11'}),
+        cssnext,
+        atImport,
+        precss,
+        bem,
+        // color_rgba_fallback,
+        // opacity,
+        pseudoelements,
+        // vmin,
+        pixrem,  
         mqpacker,
-         alias,
-    crip,
-    magician,
-    triangle,
-    circle,
-    linkColors,
-    center,
-    clearfix,
-    position,
-    size,
-    verthorz,
-    colorShort
-        // cssnano
+        // alias,
+        // crip,
+        magician,
+        triangle,
+        circle,
+        linkColors,
+        center,
+        clearfix,
+        position,
+        size,
+        // verthorz,
+        colorShort,
+        
   ];
   return gulp.src('./app/postcss/*.css')
     .pipe(postcss(processors))
-    .pipe(gulp.dest('./app/css/')).pipe(livereload());
+    .pipe(gulp.dest('./app/css/'));
 });
 
-//css压缩
-gulp.task( 'minifycss', function(){
-    gulp.src('app/css/*.css')
-        // .pipe(concat('styles.css'))
-        .pipe(minifycss())
-        .pipe(gulp.dest('./build/css'));
-});
 
 //html压缩
 gulp.task('minify-html', function() {
@@ -131,13 +107,13 @@ gulp.task("jsx", function () {
   return browserify("app/src/test.js")
     .transform("babelify")
     .bundle()
-    .pipe(source('test.js'))
+    .pipe(source('bundle.js'))
     // .pipe(babel({
     //   presets: ['es2015'],
     //   plugins: ['transform-runtime']
     // }))
     // .pipe(sourcemaps.write('./maps'))
-    .pipe(gulp.dest('./app/js')).pipe(livereload());
+    .pipe(gulp.dest('./app/js'));
 });
 
 //jsx
@@ -148,16 +124,7 @@ gulp.task("jsx", function () {
 //   .pipe(gulp.dest('./app/js')).pipe(livereload());
 // });
 
-//js验证压缩
-// gulp.task('scripts', function() {
-// 	gulp.src('app/js/**/*.js')
-// 		// .pipe(jshint())
-// 		// .pipe(jshint.reporter('default'))
-// 		// .pipe(concat('main.js'))
-// 		.pipe(uglify())
-// 		.pipe(gulp.dest('./build/js'))
-// 		.pipe(notify({ message: 'Scripts task complete' }));
-// });
+
 
 //压缩图片
 gulp.task('images', function () {
@@ -176,15 +143,32 @@ gulp.task('clean', function(cb) {
 	del(['bulid/img/', 'build/js/', 'build/css/', 'build/'], cb)
 });
 
+//js压缩
+
+gulp.task('minify-js', function () {
+   gulp.src('./app/js/*.js')
+      .pipe(uglify())
+      .pipe(gulp.dest('build/js'))
+});
+
+//css 压缩
+
+gulp.task('minify-css', function () {
+   gulp.src('./app/css/*.css')
+      .pipe(gulp.dest('build/css'))
+});
+
+
+
 //默认任务
 
 gulp.task('default', ['clean'], function() {
-	gulp.run('images','minifycss', 'scripts','minify-html');
+	gulp.run('images', 'minify-js','minify-html');
 });
 
 //reload
 gulp.task('reload', ['clean'], function() {
-  gulp.run('connect','watch', 'html');
+  gulp.run('watch','browser-sync');
 });
 
 //监听文件
@@ -209,7 +193,23 @@ gulp.task('connect', function() {
   });
 });
 gulp.task('html', function () {
-  gulp.src(['./app/*.html','./app/postcss/*.scss','./app/src/*.js'])
+  gulp.src(['./app/*.html','./app/postcss/**/*','./app/src/**/*'])
    .pipe(livereload());
 });
 
+//无刷新
+
+gulp.task('browser-sync', function () {
+   var files = [
+      'app/**/*.html',
+      'app/css/**/*.css',
+      'app/assets/img/**/*',
+      'app/js/**/*.js'
+   ];
+
+   browserSync.init(files, {
+      server: {
+         baseDir: './app'
+      }
+   });
+});
